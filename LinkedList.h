@@ -9,6 +9,9 @@ public:
 
    LinkedList();
    ~LinkedList();
+   
+   void addNode(*Node node);
+   bool findTile(*Node node);
 
 private:
    Node* head;
