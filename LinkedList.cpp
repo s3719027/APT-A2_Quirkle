@@ -2,6 +2,7 @@
 #include "LinkedList.h"
 
 LinkedList::LinkedList() : head(nullptr){
+   
 }
 
 LinkedList::~LinkedList() {

@@ -1,11 +1,9 @@
 #include "Node.h"
 
-Node::Node(Tile* _tile, Node* _next) : tile(_tile), next(_next)
-{
+Node::Node(Tile* _tile, Node* _next) : tile(_tile), next(_next) {
 }
 
-Node::Node(Node& other)
-{
+Node::Node(Node& other) {
    // TODO
 }
 void Node::setNext(*Node _next) {
