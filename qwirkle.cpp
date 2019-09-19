@@ -10,6 +10,7 @@
 void loadMenu();
 void startNewGame();
 void loadGame();
+void showStudentInformation();
 
 int main(void) {
 
@@ -26,12 +27,15 @@ int main(void) {
 
   if ( menuChoice == 1 ) {
     //Start new game
+    startNewGame();
 
   } else if ( menuChoice == 2 ) {
     //Load game
+    loadGame();
 
   } else if ( menuChoice == 3 ) {
     //Show student information
+    showStudentInformation();
 
   } else if ( menuChoice == 4 ) {
     std::cout << "Goodbye!" << std::endl;
@@ -88,8 +92,7 @@ void startNewGame() {
 }
 
 
-void loadGame()
-{
+void loadGame() {
   std::cin.ignore();
   std::cout << "Enter the filename from which load a game. Type 'Back' to go back to menu.\n>";
   std::string fileName;
@@ -102,4 +105,24 @@ void loadGame()
       std::cin >> fileName;
     }
   }
+}
+
+void showStudentInformation() {
+  std::cout << "---------------------------------- " << std::endl;
+  std::cout << "Name:\t" << "Daniel Bound" << std::endl;
+  std::cout << "Student ID:\t" << "s3719027" << std::endl;
+  std::cout << "Email:\t" << "s3719027@student.rmit.edu.au\n" << std::endl;
+
+  std::cout << "Name:\t" << "Zhiwei Hou" << std::endl;
+  std::cout << "Student ID:\t" << "s3699329" << std::endl;
+  std::cout << "Email:\t" << "s3699329@student.rmit.edu.au\n" << std::endl;
+
+  std::cout << "Name:\t" << "Hui Alvin Markus" << std::endl;
+  std::cout << "Student ID:\t" << "s3677729" << std::endl;
+  std::cout << "Email:\t" << "s3677729@student.rmit.edu.au\n" << std::endl;
+
+  std::cout << "Name:\t" << "Zhifeng Rong" << std::endl;
+  std::cout << "Student ID:\t" << "s3631999" << std::endl;
+  std::cout << "Email:\t" << "s3631999@student.rmit.edu.au" << std::endl;
+  std::cout << "---------------------------------- " << std::endl;
 }
