@@ -10,7 +10,6 @@ public:
 private:
 	std::string name;
 	int points;
-	
 };
 
-#endif // ASSIGN2_NODE_H
+#endif // ASSIGN2_PLAYER_H
