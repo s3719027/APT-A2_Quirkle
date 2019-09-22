@@ -1,14 +1,23 @@
+
 #include "Tile.h"
 
-Tile::Tile(Colour _colour, Shape _shape) {
-	colour = _colour;
-	shape = _shape;
+// Empty... for now?
+Tile::Tile(Colour colour, Shape shape)
+{
+  this->colour=colour;
+  this->shape=shape;
 }
-Tile::~Tile() {
+
+std::string Tile::toString()
+{
+  return colour + std::to_string(shape);
 }
-char Tile::getColour() {
-	return this->colour;
+
+Colour Tile::getColour()
+{
+  return colour;
 }
-int Tile::getShape() {
-	return this->shape;
+Shape Tile::getShape()
+{
+  return shape;
 }

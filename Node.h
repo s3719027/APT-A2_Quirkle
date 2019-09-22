@@ -6,15 +6,13 @@
 
 class Node {
 public:
+
    Node(Tile* tile, Node* next);
    Node(Node& other);
-   void setNext(*Node _next);
-   Node* getNext();
-   Tile* getTile();
-   
-private:
+
    Tile*    tile;
    Node*    next;
+   Tile*  getTile();
 };
 
 #endif // ASSIGN2_NODE_H
