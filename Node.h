@@ -6,9 +6,9 @@
 
 class Node {
 public:
-   Node(Tile* tile, Node* next);
+   Node(Tile* tile, Node* _next);
    Node(Node& other);
-   void setNext(*Node _next);
+   void setNext(Node* _next);
    Node* getNext();
    Tile* getTile();
    

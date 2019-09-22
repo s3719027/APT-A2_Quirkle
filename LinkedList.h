@@ -13,8 +13,8 @@ public:
    void addBack(Node* node);
    void addFront(Node* node);
    void deleteFront();
-   void deleteTIle(Tile* tile);
-   bool findTile(Node* node);
+   void deleteTile(Tile* tile);
+   bool findTile(Tile* tile);
    Node* getHead();
 
 private:

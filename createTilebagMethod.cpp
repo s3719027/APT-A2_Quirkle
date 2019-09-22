@@ -1,6 +1,14 @@
+#include <vector>
+#include <random>
+#include <iostream>
+#include "TileCodes.h"
+#include "LinkedList.h"
+
+
 #define NUMCOLOURS 6
 #define NUMSHAPES 6
 
+LinkedList* createTileBag();
 
 LinkedList* createTileBag() {
 	
@@ -12,16 +20,15 @@ LinkedList* createTileBag() {
 	for (int i = 0; i != NUMCOLOURS; i++) {
 		for (int j = 0; j != NUMSHAPES; j++) {
 			for (int k = 0; k != 4; k++) {
-				Tile* tile = new Tile(i, j);
+				Tile* tile = new Tile(colours[i], shapes[j]);
 				Node* node = new Node(tile, nullptr);
-				orderedBag.addNode(node);
+				orderedBag->addBack(node);
 			}
 		}
 	}
-	
 	//shuffleBag
 	LinkedList* shuffledBag = new LinkedList();
-	std::vector<Node> nodes;
+	std::vector<Node*> nodes;
 	Node* node = orderedBag->getHead();	
 	
 	while (node->getNext() != nullptr) {
@@ -32,7 +39,7 @@ LinkedList* createTileBag() {
 	std::random_shuffle(nodes.begin(), nodes.end());
 	
 	for (int i = 0; i != nodes.size(); i++) {
-		shuffledBag.addBack(nodes.at(i));
+		shuffledBag->addBack(nodes.at(i));
 	}
 	return shuffledBag;
 }

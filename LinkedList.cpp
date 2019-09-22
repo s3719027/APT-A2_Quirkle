@@ -1,4 +1,4 @@
-
+#include <iostream>
 #include "LinkedList.h"
 
 LinkedList::LinkedList() : head(nullptr){
@@ -7,11 +7,12 @@ LinkedList::LinkedList() : head(nullptr){
 LinkedList::~LinkedList() {
 }
 
-void LinkedList::addBack(*Node node) {
+void LinkedList::addBack(Node* node) {
    if (head == nullptr) {
       head = node;
    }
    else {
+      std::cout << "here1";
       Node* tempNode = head;
       while (tempNode->getNext() != nullptr) {
          tempNode = tempNode->getNext();
@@ -25,7 +26,7 @@ void LinkedList::addFront(Node* node) {
 }
 void LinkedList::deleteFront() {
    Node* node = head;
-   head = head.getNext();
+   head = head->getNext();
    delete node;
 }
 void LinkedList::deleteTile(Tile* tile) {
@@ -50,7 +51,7 @@ void LinkedList::deleteTile(Tile* tile) {
       }
    }
 }
-bool LinkedList::findTile(*Tile tile) {
+bool LinkedList::findTile(Tile* tile) {
    if (head != nullptr) {   
       Node* tempNode = head;
       do {
@@ -61,7 +62,7 @@ bool LinkedList::findTile(*Tile tile) {
             tempNode = tempNode->getNext();
          }
       }
-      while (tempNode->getNext() != nullptr)
+      while (tempNode->getNext() != nullptr);
    }
    return false;
 }
