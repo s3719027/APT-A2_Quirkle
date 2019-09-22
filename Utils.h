@@ -5,3 +5,5 @@
 #include "Tile.h"
 #include "TileCodes.h"
 #include "LinkedList.h"
+
+void changeTileOnBoard(Tile tile);
