@@ -12,7 +12,6 @@ void LinkedList::addBack(Node* node) {
       head = node;
    }
    else {
-      std::cout << "here1";
       Node* tempNode = head;
       while (tempNode->getNext() != nullptr) {
          tempNode = tempNode->getNext();
