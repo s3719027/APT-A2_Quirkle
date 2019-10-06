@@ -6,7 +6,8 @@ public:
 	Player(std::string _name);
 	std::string getName();
 	int getPoints();
-	
+	void addPoints(int _points);
+
 private:
 	std::string name;
 	int points;

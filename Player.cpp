@@ -8,3 +8,7 @@ std::string Player::getName() {
 int Player::getPoints() {
 	return points;
 }
+
+void Player::addPoints( int _points ) {
+	points += _points;
+}

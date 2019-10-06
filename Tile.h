@@ -12,11 +12,14 @@ typedef int Shape;
 
 class Tile {
 public:
+  Tile();
    Tile(Colour _colour, Shape _shape);
    ~Tile();
    char getColour();
    int getShape();
-   
+   bool checkSimilar( Tile *tile );
+   bool checkEmpty();
+
    Colour colour;
    Shape  shape;
 };
