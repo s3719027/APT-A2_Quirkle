@@ -1,7 +1,7 @@
 #include <iostream>
 #include <regex>
 
-void startGame(Board* board, LinkedList* tilebag, Player* player1, Player* player2) {
+void startGame(Board* board, LinkedList* tilebag, Player* player1, Player* player2, Player* currPlayer) {
 	
 	//state whos turn it is
 	//print scores
@@ -13,7 +13,7 @@ void startGame(Board* board, LinkedList* tilebag, Player* player1, Player* playe
 	
 	//reloop until tilebag empty or no tiles
 	
-	Player* currentPlayer = player1;
+	Player* currentPlayer = currPlayer;
 	std::string command = "";
 	
 	while (currentPlayer->getTilesOnHand()->size() != 0) {
@@ -36,7 +36,7 @@ void startGame(Board* board, LinkedList* tilebag, Player* player1, Player* playe
 				
 			if (commandParts[0] == "place") {
 				//validates the input is a possible tile
-				if (std::regex_match(commandParts[1], "[A-G][1-6]")) {
+				if (std::regex_match(commandParts[1], "[A-F][1-6]")) {
 					if (commandParts[2] == "at") {
 						//validates the input is a possible position
 						if (std::regex_match(commandParts[1], "[A-Z][0-25]")) {
@@ -53,11 +53,29 @@ void startGame(Board* board, LinkedList* tilebag, Player* player1, Player* playe
 									
 									//remove tile just taken from tilebag
 									tilebag->deleteFront();
+									
+									//swap currentPlayer
+									(currentPlayer == player1) ? (currentPlayer = player2) : (currentPlayer = player1);
 									validInput = true;
 								}
+								else {
+									std::cout << "You can't place a tile there..." << std::endl;
+								}
+							}
+							else {
+								std::cout << "You don't have that tile..." << std::endl;
 							}
 						}
+						else {
+							std::cout << "That's not a valid position..." << std::endl;
+						}
 					}
+					else {
+						std::cout << "Invalid command syntax..." << std::endl;
+					}
+				}
+				else {
+					std::cout << "Not a valid tile..." << std::endl;
 				}
 			}
 			else if (commandParts[0] == "replace") {
@@ -75,13 +93,16 @@ void startGame(Board* board, LinkedList* tilebag, Player* player1, Player* playe
 						
 						//delete head of tilebag	
 						tilebag->deleteFront();
-									
+						
+						//swap currentPlayer
+						(currentPlayer == player1) ? (currentPlayer = player2) : (currentPlayer = player1);	
 						validInput = true;
 					}
 				}
 			}
 			else if (commandParts[0] == "save") {
 				if (commandParts[1] != nullptr) {
+					saveGame(commandParts[1], board, tilebag, player1, player2, currentPlayer)
 					validInput = true;
 				}
 			}
