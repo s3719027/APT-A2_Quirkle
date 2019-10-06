@@ -5,12 +5,12 @@ Board::Board(int rows, int cols){
   this->cols = cols;
 
   tilesOnBoard = vector<vector<Tile*> > (rows, vector<Tile*>(cols));
-  isFirstTilePlaced = false;
+
 }
 
 Board::~Board(){
-  for (int i = 0; i <(signed int) tilesOnBoard.size(); i++)
-    for (int j = 0; j <(signed int) tilesOnBoard[i].size(); j++)
+  for (int i = 0; i < (signed int)tilesOnBoard.size(); i++)
+    for (int j = 0; j < (signed int)tilesOnBoard[i].size(); j++)
       delete tilesOnBoard[i][j];
 }
 
@@ -29,19 +29,16 @@ void Board::store(Tile* tile, int row, int col){
      }
     tilesOnBoard[row][col] = tile;
 
-    if (!isFirstTilePlaced)
-      isFirstTilePlaced = true;
   }
 }
 
 string Board::boardBodyToString(){
   string s = "";
 
-  for (int i = 0; i < tilesOnBoard.size(); i++){
+  for (int i = 0; i < (signed int)tilesOnBoard.size(); i++){
     //conver row number to letters
-    s += letterForRows(i) + " |";
-    //print all of tiles from vector
-    for (int j = 0; j < tilesOnBoard[i].size(); j++){
+    s += rowsLetter(i) + " |";
+    for (int j = 0; j < (signed int)tilesOnBoard[i].size(); j++){
       if (tilesOnBoard[i][j] != nullptr)
         s += tilesOnBoard[i][j]->toString() + "|";
       else{
@@ -70,16 +67,13 @@ string Board::boardHeaderToString(){
   for (int i = 0; i < numOfDashesToPrint; i++){
     s += "-";
   }
-    return s;
+  s += "\r\n";
+  return s;
 }
 
 void Board::printBoard(){
   std::cout << boardHeaderToString();
   std::cout << boardBodyToString();
-}
-
-bool Board::isTileAlreadyAt(int row, int col){
-  return tilesOnBoard[row][col] != nullptr;
 }
 
 vector<vector<Tile*> > Board::getTilesOnBoard(){
@@ -94,9 +88,6 @@ int Board::getCols(){
   return cols;
 }
 
-bool Board::isFirstTileOnBoard(){
-  return isFirstTilePlaced;
-}
 
 bool Board::isWithinBound(int atRow, int atCol){
   return atRow >= 0 && atCol >= 0 && atRow < rows && atCol < cols

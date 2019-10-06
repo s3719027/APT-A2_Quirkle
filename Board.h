@@ -26,14 +26,6 @@ public:
 
   string boardBodyToString();
 
-  bool isTileAlreadyAt(int row, int col);
-
-  bool isFirstTileOnBoard();
-
-
-//  bool isBoardEmpty();
-
-
   int getRows();
 
   int getCols();
@@ -48,7 +40,7 @@ private:
   int maxRows = 26;
   int maxCols = 26;
   vector<vector<Tile*> > tilesOnBoard;
-  bool isFirstTilePlaced;
+
 };
 
 #endif

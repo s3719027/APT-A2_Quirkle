@@ -31,6 +31,7 @@ public:
   int getScore();
 
   int setScore(int score);
+
 private:
   std::string name;
   int score;

@@ -109,18 +109,18 @@ void LinkedList::remove(std::string name){
 
 //returns a matching node
 Node* LinkedList::findNode(std::string name){
-  Node* matchingNode = nullptr;
+  Node* node = nullptr;
   bool found = false;
   Node* current = head;
 
   while (current != nullptr){
     if (current->getTile()->toString() == name && !found) {
-      matchingNode = current;
+    node = current;
       found = true;
     }
     current = current->next;
   }
-  return matchingNode;
+  return node;
 }
 
 Node* LinkedList::getHead(){
