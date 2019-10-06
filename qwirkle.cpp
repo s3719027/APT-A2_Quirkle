@@ -69,7 +69,7 @@ void startNewGame() {
     std::cin << totalPlayer;
   }
 
-  std::string playerName
+  std::string playerName[totalPlayer];
   std::cin.ignore();
 
   for ( int x = 0; x < totalPlayer; x++ ) {
