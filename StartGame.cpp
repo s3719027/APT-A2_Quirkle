@@ -223,16 +223,53 @@ void StartGame::saveGame(std::string saveName, Board* board, LinkedList* tilebag
 
 	saveGame << player1->getScore()<<std::endl;
 
+  std::string player1hand = "";
+  Node* currNode = player1->getTilesOnHand()->getHead();
+  for (int i = 0; i != 6; i++) {
+    if (currNode->next != nullptr) {
+      player1hand += (currNode->getTile()->toString() + ", ");
+    }
+    else {
+      player1hand += currNode->getTile()->toString();
+    }
+    currNode = currNode->next;
+  }
+  saveGame << player1hand
+
 	saveGame << player1->getTilesOnHand()->toString();
 
 	saveGame << player2->getName()<<std::endl;
 
 	saveGame << player2->getScore()<<std::endl;
 
-	saveGame << player2->getTilesOnHand()->toString();
-
+  std::string player2hand = "";
+  Node* currNode = player2->getTilesOnHand()->getHead();
+  for (int i = 0; i != 6; i++) {
+    if (currNode->next != nullptr) {
+      player2hand += (currNode->getTile()->toString() + ", ");
+    }
+    else {
+      player2hand += currNode->getTile()->toString();
+    }
+    currNode = currNode->next;
+  }
+  saveGame << player2hand
+  
 	saveGame <<fullboard<<std::endl;
 	//saveGame << tilebag->toString();
+  
+  std::string tilebag = "";
+  Node* currNode = tileBag->->getHead();
+  for (int i = 0; i != tileBag->size(); i++) {
+    if (currNode->next != nullptr) {
+      tilebag += (currNode->getTile()->toString() + ", ");
+    }
+    else {
+      tilebag += currNode->getTile()->toString();
+    }
+    currNode = currNode->next;
+  }
+  saveGame << tilebag
 
 	saveGame <<currentName<<std::endl;
 	saveGame.close();
@@ -289,7 +326,6 @@ void StartGame::loadGame(std::string saveName)
  {
 
    Tile* tile = new Tile(tile.substr(0,1), tile.substr(1,1));
-
    player2->getTilesOnHand()->add(tile);
 
  }
