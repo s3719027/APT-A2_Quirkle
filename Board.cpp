@@ -87,9 +87,3 @@ int Board::getRows(){
 int Board::getCols(){
   return cols;
 }
-
-
-bool Board::isWithinBound(int atRow, int atCol){
-  return atRow >= 0 && atCol >= 0 && atRow < rows && atCol < cols
-          && atRow < maxRows && atCol < maxCols;
-}

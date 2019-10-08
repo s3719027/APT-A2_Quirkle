@@ -25,12 +25,7 @@ bool StartGame::GameOver()
 
 void StartGame::SetUpGame()
 {
-  board=new Board(6,6);
-  Bag* bag=new Bag();
-  tileBag=bag->getBag();
 
-  player1=new Player("AAA");
-  player2=new Player("BBB");
 
   for (int i = 0; i < 6; i++){
     player1->addTiles(tileBag->getNext()->getTile());
@@ -49,11 +44,13 @@ void StartGame::SetUpGame()
     {
       showGameInfo(player1);
       playerMovement(player1,board);
+      giveScore(player1);
       currentPlayerName=player2->getName();
     }else
     {
       showGameInfo(player2);
       playerMovement(player2,board);
+      giveScore(player2);
       currentPlayerName=player1->getName();
     }
  }
@@ -61,19 +58,29 @@ void StartGame::SetUpGame()
 }
 
 
-/*std::string StartGame::PlayerSignIn(std::string player)
+void StartGame::PlayerSignIn()
 {
-  std::string playerName="";
-  std::cout<<"Enter a name for"<< player<<"(uppercase characters only)"<<std::endl;
-  std::cin>>playerName;
-  if(IsVaildInput(playerName)==true)
+  std::string playerName1="";
+  std::string playerName2="";
+  std::cout<<"Enter a name for player1 (uppercase characters only)"<<std::endl;
+  std::cin>>playerName1;
+
+  std::cout<<"Enter a name for player1 (uppercase characters only)"<<std::endl;
+  std::cin>>playerName2;
+  player2=new Player(playerName2);
+  if(vaildInput(playerName1))
   {
-   std::cout<<"Let's play!"<<std::endl;
-   return playerName;
- }else{
+    player1=new Player(playerName1);
+  }
+  if(vaildInput(playerName2))
+  {
+    player2=new Player(playerName2);
+    std::cout<<"Let's play!"<<std::endl;
+  }
+  else{
    PlayerSignIn();
  }
-}*/
+}
 
 //To make sure player enter uppercase name
 
@@ -82,6 +89,7 @@ void StartGame::playerMovement(Player* player,Board* board)
    std::string playerInput="";
    std::cout<<"< ";
    getline(std::cin,playerInput);
+   transform(playerInput.begin(),playerInput.end(),playerInput.begin(), ::toupper);
    int row=0;
    int col=0;
    std::stringstream ss;
@@ -89,14 +97,17 @@ void StartGame::playerMovement(Player* player,Board* board)
    ss>>col;
    row=changeletterToInt(getInput(playerInput,12,13));
    std::string tilename=getInput(playerInput,6,8);
+   Tile* tileToPlace = player->findTile(tilename);
 if(playerInput!="")
  {
   if(getInput(playerInput,0,5)=="PLACE"&&isTilesOnHand(player,getInput(playerInput,6,8))==1
   &&getInput(playerInput,9,11)=="AT"&&isInBoard(board,row,col)==1)
   {
+    if(qwrikleRule(tileToPlace,row,col,board)==true)
+    {
          if(player->getTilesOnHand()->has(tilename))
          {
-           Tile* tileToPlace = player->findTile(tilename);
+           calculatePlayerScores(board,row,col);
            board->store(tileToPlace,row,col);
            player->removeTile(tilename);
            if (tileBag->size() > 0)
@@ -109,6 +120,7 @@ if(playerInput!="")
          else{
            std::cout<<"No these tile on your hand"<<std::endl;
           }
+    }
    }
    else if(getInput(playerInput,0,7)=="REPLACE")
    {
@@ -130,7 +142,7 @@ if(playerInput!="")
 
 bool StartGame::isInBoard(Board* limitBoard,int row, int col)
 {
-  if(limitBoard->isWithinBound(row,col))
+  if(row<limitBoard->getRows()&&col<limitBoard->getCols())
   {
     return true;
   }
@@ -146,9 +158,111 @@ bool StartGame::isTilesOnHand(Player* player, std::string word)
   return false;
 }
 
-bool StartGame::qwrikleRule(Tile* tile, int row, int col, std::vector<std::vector<Tile*>>tiles_on_board)
+bool StartGame::qwrikleRule(Tile* tile, int row, int col, Board* board)
 {
-  std::vector<Tile*>
+//  bool vaild=false;
+  bool colorIssue=true;
+  bool shapeIssue=true;
+  bool canPlace=false;
+  int leftSide=col-1;
+  int rightSide=col+1;
+  int upSide=row-1;
+  int lowerSide=row+1;
+  std::vector<std::vector<Tile*>> v=board->getTilesOnBoard();
+  std::vector<Tile*>toRight;//it is the direction of the tile placed
+  std::vector<Tile*>toLeft;
+  std::vector<Tile*>toUp;
+  std::vector<Tile*>toLow;
+  //to make sure these are tiles around the last tile
+  //            t2
+  //          tile1
+  // Because the rule of qwirkle ask player to place the tile around the last tile;
+  std::vector<Tile*> horizontalTiles;
+  std::vector<Tile*> verticalTiles;
+
+  if(isEmpty(board)==true)
+  {
+    //firstTile can place anywhere
+    isFirstTile=true;
+    canPlace=true;
+  }else{
+    isFirstTile=false;
+  }
+  //get the tile around the destination, if have tile around the destination, it means
+  //player can place tile here;
+
+  //it is single direction; up-low-right-left;
+if(isFirstTile==false)
+{
+  while(leftSide>=0&&v[row][leftSide]!=nullptr)
+  {
+    //same horizontal must place same color tiles;
+    if(isSameColor(tile,v[row][leftSide])&&!isSameShape(tile,v[row][leftSide]))
+    {
+      toRight.push_back(v[row][leftSide]);
+      leftSide-=1;
+      canPlace=true;
+      //colorIssue=true;
+    }else{
+     canPlace=false;
+     colorIssue=false;
+    }
+
+  }
+  while(rightSide<board->getCols()&&v[row][rightSide]!=nullptr)
+  {
+    //same horizontal must place same color tiles;
+    if(isSameColor(tile,v[row][rightSide])&&!isSameShape(tile,v[row][rightSide]))
+    {
+      toLeft.push_back(v[row][leftSide]);
+      rightSide+=1;
+      canPlace=true;
+    //  colorIssue=true;
+    }else{
+      colorIssue=false;
+      canPlace=false;
+    }
+  }
+  while(upSide>=0&&v[upSide][col]!=nullptr)
+  {
+     if(isSameShape(tile,v[upSide][col])&&!isSameColor(tile,v[upSide][col]))
+     {
+       toLow.push_back(v[upSide][col]);
+       upSide-=1;
+       canPlace=true;
+      // shapeIssue=true;
+     }else{
+       shapeIssue=false;
+       canPlace=false;
+     }
+  }
+  while(lowerSide<board->getRows()&&v[lowerSide][col]!=nullptr)
+  {
+    if(isSameShape(tile,v[lowerSide][col])&&!isSameColor(tile,v[lowerSide][col]))
+    {
+      toUp.push_back(v[lowerSide][col]);
+      lowerSide+=1;
+      canPlace=true;
+      //shapeIssue=true;
+    }else{
+      shapeIssue=false;
+      canPlace=false;
+    }
+  }
+  // two direction
+
+  if(colorIssue==false)
+  {
+   std::cout<<"You can't place here, you must to place the same color tile"<<std::endl;
+ }else if(shapeIssue==false)
+  {
+   std::cout<<"You can't place here, you must to place the same shape tile"<<std::endl;
+  }
+
+  return canPlace;
+}
+ return canPlace;
+
 }
 //replace function, it can  replace one tile in player's hand;
 void StartGame::replaceTileOnHand(Player* player, std::string tilename)
@@ -168,12 +282,13 @@ void StartGame::replaceTileOnHand(Player* player, std::string tilename)
 void StartGame::showGameInfo(Player* player)
 {
   std::cout<<player->getName()<<" is your turn."<<std::endl;
-  std::cout<<player1->getName()<<":"<<std::endl;
-  std::cout<<player2->getName()<<":"<<std::endl;
+  std::cout<<player1->getName()<<":"<<player1->getScore()<<std::endl;
+  std::cout<<player2->getName()<<":"<<player2->getScore()<<std::endl;
   std::cout <<std::endl;
   board->printBoard();
   std::cout <<std::endl;
   player->showTilesOnHand();
+  std::cout<<std::endl;
 }
 
 bool StartGame::isEmpty(Board* board)
@@ -211,65 +326,140 @@ bool StartGame::isSameShape(Tile* tile1, Tile* tile2)
   return false;
 }
 
+void StartGame::giveScore(Player* player)
+{
+  if(qwirkle)
+  {
+    score+=6;
+  }
+  player->addScore(score);
+  score=0;
+  qwirkle=false;
+}
+//Because the place where player want to place tile is empty, if we want to count the tiles,
+//we have to start from the last tile;
+void StartGame::calculatePlayerScores(Board* board, int row, int col)
+{
+  std::vector<std::vector<Tile*>> v=board->getTilesOnBoard();
+  if(col>=0&&v[row][col-1]!=nullptr)
+  {
+    this->score+=countTilesInBoard(board,row,col,"Left");
+  }
+  if(col<board->getCols()&&v[row][col+1]!=nullptr)
+  {
+    this->score+=countTilesInBoard(board,row,col+1,"Right");
+  }
+  if(row>=0&&v[row-1][col]!=nullptr)
+  {
+    this->score+=countTilesInBoard(board,row-1,col,"Up");
+  }
+  if(row<board->getRows()&&v[row+1][col]!=nullptr)
+  {
+    this->score+=countTilesInBoard(board,row+1,col,"Low");
+  }
+}
+
+
+int StartGame::countTilesInBoard(Board* board, int row, int col,std::string direction)
+{
+  int numberOfTiles=0;
+  std::vector<std::vector<Tile*>> v=board->getTilesOnBoard();
+  if(direction=="Right")
+  {
+    while(col<board->getCols()&&v[row][col]!=nullptr)
+    {
+      numberOfTiles+=1;
+      col+=1;
+    }
+  }
+  else if(direction=="Left")
+  {
+    while(col>=0&&v[row][col]!=nullptr)
+    {
+      numberOfTiles+=1;
+      col-=1;
+    }
+  }
+  else if(direction=="Up")
+  {
+    while(row>=0&&v[row][col]!=nullptr)
+    {
+      numberOfTiles+=1;
+      row-=1;
+    }
+  }
+  else if(direction=="Low")
+  {
+    while(row<board->getRows()&&v[row][col]!=nullptr)
+    {
+      numberOfTiles+=1;
+      row+=1;
+    }
+  }
+  //the last tile placed into the list cannot be counted
+  //R1 R2 R3 R4 R5 R6
+  //0  1  2  3  4   5
+  //this function calculate the last in each tileList;
+  if(numberOfTiles==5)
+  {
+     this->qwirkle=true;
+     std::cout<<"Qwirkle!"<<std::endl;
+  }
+    return numberOfTiles;
+}
+
 void StartGame::saveGame(std::string saveName, Board* board, LinkedList* tilebag, Player* player1, Player* player2,std::string currentName)
 {
   std::string filename = saveName + ".txt";
 
 	std::ofstream saveGame;
-  save.open(filename,std::ios::out);
+
+  saveGame.open(filename,std::ios::out);
+
   std::string fullboard=board->boardHeaderToString();
-      fullBoard += board->boardBodyToString();
+      fullboard += board->boardBodyToString();
+
+Node* current=player1->getTilesOnHand()->getHead();
+
 	saveGame << player1->getName()<<std::endl;
 
 	saveGame << player1->getScore()<<std::endl;
 
-  std::string player1hand = "";
-  Node* currNode = player1->getTilesOnHand()->getHead();
-  for (int i = 0; i != 6; i++) {
-    if (currNode->next != nullptr) {
-      player1hand += (currNode->getTile()->toString() + ", ");
-    }
-    else {
-      player1hand += currNode->getTile()->toString();
-    }
-    currNode = currNode->next;
+  while(current!=nullptr)
+  {
+    if(cuurent->next!=nullptr)
+      saveGame<<cuurent->getTile()->toString()<<",";
+    else
+      saveGame<<current->getTile()->toString()<<std::endl;
+    current=current->next;
   }
-  saveGame << player1hand
-
-	saveGame << player1->getTilesOnHand()->toString();
 
 	saveGame << player2->getName()<<std::endl;
 
 	saveGame << player2->getScore()<<std::endl;
 
-  std::string player2hand = "";
-  Node* currNode = player2->getTilesOnHand()->getHead();
-  for (int i = 0; i != 6; i++) {
-    if (currNode->next != nullptr) {
-      player2hand += (currNode->getTile()->toString() + ", ");
-    }
-    else {
-      player2hand += currNode->getTile()->toString();
-    }
-    currNode = currNode->next;
+	current=player2->getTilesOnHand()->getHead();
+
+  while(current!=nullptr)
+  {
+    if(current->next!=nullptr)
+      saveGame<<cuurent->getTile()->toString()<<",";
+    else
+      saveGame<<current->getTile()->toString()<<std::endl;
+    current=current->next;
   }
-  saveGame << player2hand
-  
+
 	saveGame <<fullboard<<std::endl;
-	//saveGame << tilebag->toString();
-  
-  std::string tilebag = "";
-  Node* currNode = tileBag->->getHead();
-  for (int i = 0; i != tileBag->size(); i++) {
-    if (currNode->next != nullptr) {
-      tilebag += (currNode->getTile()->toString() + ", ");
-    }
-    else {
-      tilebag += currNode->getTile()->toString();
-    }
-    currNode = currNode->next;
-  }
-  saveGame << tilebag
+
+  Node* bagNode=tileBag->getHead();
+   while(bagNode!=nullptr)
+   {
+     if(bagNode->next!=nullptr)
+        saveGame<<bagNode->getTile()->toString()<<",";
+     else
+        saveGame<<bagNode->getTile()->toString()<<std::endl;
+     bagNode=bagNode->next;
+   }
 
 	saveGame <<currentName<<std::endl;
 	saveGame.close();
@@ -277,27 +467,31 @@ void StartGame::saveGame(std::string saveName, Board* board, LinkedList* tilebag
   exit(0);
 }
 
-void StartGame::loadGame(std::string saveName)
+void StartGame::loadGame(std::string fileName)
 {
   std::string filename = saveName + ".txt";
-
- std::ifstream loadGame (filename);
+  std::string tile;
+ std::ifstream loadGame;
+ loadGame.open(filename,std::ios::in);
  //creates player with name
 
  std::string line;
  std::getline(loadGame, line);
- player* player1 (line);
+ player1=new Player(line);
 
  //updates players score
+ //the end of getline is /n
  std::getline(loadGame, line);
- player1->setScore(std::stoi(line));
+ int player1Score=0;
+ std::stringstream ss;
+ ss<<line;
+ ss>>player1Score;
+ player1->setScore(player1Score);
  //adds tiles to players hand
  std::getline(loadGame, line);
 
+
  std::stringstream ss(line);
-
- std::string tile;
-
  while (std::getline(ss, tile, ','))
 
  {
@@ -310,11 +504,13 @@ void StartGame::loadGame(std::string saveName)
 
  //creates player with name
  std::getline(loadGame, line);
- Player* player2 (line);
+ player2 =new Player(line);
  //updates players score
-
+int player2Score=0;
  std::getline(loadGame, line);
- player2->setScore(std::stoi(line));
+ ss<<line;
+ ss>>player2Score;
+ player2->setScore(player2Score);
  //adds tiles to players hand
 
  std::getline(loadGame, line);
@@ -326,6 +522,7 @@ void StartGame::loadGame(std::string saveName)
  {
 
    Tile* tile = new Tile(tile.substr(0,1), tile.substr(1,1));
+
    player2->getTilesOnHand()->add(tile);
 
  }
@@ -400,54 +597,25 @@ void StartGame::loadGame(std::string saveName)
 
  std::getline(loadGame, line);
 
- Player* currPlayer;
+ currentPlayerName=line;
 
- if (player1->getName == line) {
-
-   currPlayer = player1;
-
- }
-
- else {
-   currPlayer = player2;
- }
-
- startGame(board, tilebag, player1, player2, currPlayer);
+ SetUpGame();
 }
 
 
-void StartGame::startLoadGame(Board* board, Player* player1, Player* player2, LinkedList* tileBag,
- LinkedList* player1Hand, LinkedList* player2Hand)
-  {
-
-    while(!GameOver())
-    {
-      if(currentPlayerName==player1->getName())
-      {
-        showGameInfo(player1);
-        playerMovement(player1,board);
-        currentPlayerName=player2->getName();
-      }else
-      {
-        showGameInfo(player2);
-        playerMovement(player2,board);
-        currentPlayerName=player1->getName();
-      }
-   }
-  }
-
-
-bool StartGame::IsVaildInput(std::string input)
+bool StartGame::vaildInput(std::string input)
 {
-  bool valid = true;
-
-  if (input != ""){
-    for (char c: input)
-      if ((!isalpha(c) || !isupper(c)))
-        valid = false;
+  if(input=="")
+  {
+    for(char c:input)
+    {
+      if((!isupper(c)||!isalpha(c))
+      {
+        return false;
+      }
+    }
+  }else{
+    return false;
   }
-  else
-    valid = false;
-
-  return valid;
+  return true;
 }

@@ -23,12 +23,21 @@ void Menu::showMenu()
   std::cin>>input;
   if(input=='1')
   {
+    Bag* bag=new Bag();
+    tileBag=bag->getBag();
+    board=new Board(6,6);
     StartGame* sg=new StartGame();
+    sg->PlayerSignIn();
     sg->SetUpGame();
   }
   if(input=='2')
   {
     std::cout<<"----------"<<std::endl;
+    StartGame* sg=new StartGame();
+    std::cout<<"Please, enter the name of your saved game"<<std::endl;
+    std::string savedName="";
+    getline(std::cin,savedName);
+    sg->loadGame(savedName);
   }
   if(input=='3')
   {
