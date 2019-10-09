@@ -7,7 +7,8 @@
 #include <sstream>
 #include <iostream>
 #include <fstream>
-#include <regex>
+#include <algorithm>
+
 
 class StartGame{
   public:
@@ -15,18 +16,12 @@ class StartGame{
       ~StartGame();
       bool GameOver();
       void SetUpGame();
-      void PlayerSignIn(std::string);
+      void PlayerSignIn();
       void playerMovement(Player* player,Board* board);
-      bool isTilesOnHand(Player* player,std::string word);
-      bool isInBoard(Board* limitBoard,int row, int col);
-      void showGameInfo(Player* player);
-      void replaceTileOnHand(Player* player, std::string tilename);
-      bool qwrikleRule(Tile* tile, int row, int col,Board* board);
-      bool isEmpty(Board* board);
-      void givePlayerScore(Board* board, int row, int col);
-      int countTilesInBoard(Board* board, int row, int col,std::string direction);
-      void calculatePlayerScores(Board* board, int row, int col);
-      void giveScore(Player* player);
+
+      void BasicSetting();
+      void showResult();
+      void loadGame();
   private:
     Board* board;
     Player* player1;
@@ -41,6 +36,15 @@ class StartGame{
     bool isSameColor(Tile* tile1, Tile* tile2);
     bool isSameShape(Tile* tile1, Tile* tile2);
     void saveGame(std::string saveName, Board* board, LinkedList* tilebag, Player* player1, Player* player2,std::string currentName);
-    void loadGame(std::string fileName);
+    bool isTilesOnHand(Player* player,std::string word);
+    bool isInBoard(Board* limitBoard,int row, int col);
+    void showGameInfo(Player* player);
+    void replaceTileOnHand(Player* player, std::string tilename);
+    bool qwrikleRule(Tile* tile, int row, int col,Board* board);
+    bool isEmpty(Board* board);
+    void givePlayerScore(Board* board, int row, int col);
+    int countTilesInBoard(Board* board, int row, int col,std::string direction);
+    void calculatePlayerScores(Board* board, int row, int col);
+    void giveScore(Player* player);
 
 };

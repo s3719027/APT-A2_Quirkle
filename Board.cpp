@@ -4,7 +4,7 @@ Board::Board(int rows, int cols){
   this->rows = rows;
   this->cols = cols;
 
-  tilesOnBoard = vector<vector<Tile*> > (rows, vector<Tile*>(cols));
+  tilesOnBoard = std::vector<std::vector<Tile*> > (rows, std::vector<Tile*>(cols));
 
 }
 
@@ -25,18 +25,18 @@ void Board::store(Tile* tile, int row, int col){
          tilesOnBoard[i].resize(cols);
      } else if (rows - row == 1 && rows < maxRows){
        rows += 1;
-       tilesOnBoard.resize(rows, vector<Tile*>(cols));
+       tilesOnBoard.resize(rows, std::vector<Tile*>(cols));
      }
     tilesOnBoard[row][col] = tile;
 
   }
 }
 
-string Board::boardBodyToString(){
-  string s = "";
+std::string Board::boardBodyToString(){
+  std::string s = "";
 
   for (int i = 0; i < (signed int)tilesOnBoard.size(); i++){
-    //conver row number to letters
+
     s += rowsLetter(i) + " |";
     for (int j = 0; j < (signed int)tilesOnBoard[i].size(); j++){
       if (tilesOnBoard[i][j] != nullptr)
@@ -50,8 +50,8 @@ string Board::boardBodyToString(){
   return s;
 }
 
-string Board::boardHeaderToString(){
-  string s = "   ";
+std::string Board::boardHeaderToString(){
+  std::string s = "   ";
   int numOfDashesToPrint = cols * 3 + 1;
 
   //first row of the board, 1, 2, 3, 4, ...
@@ -76,7 +76,7 @@ void Board::printBoard(){
   std::cout << boardBodyToString();
 }
 
-vector<vector<Tile*> > Board::getTilesOnBoard(){
+std::vector<std::vector<Tile*> > Board::getTilesOnBoard(){
   return tilesOnBoard;
 }
 

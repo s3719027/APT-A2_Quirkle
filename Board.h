@@ -8,9 +8,6 @@
 #include <vector>
 
 
-using std::vector;
-using std::string;
-
 class Board {
 public:
 
@@ -22,22 +19,22 @@ public:
 
   void printBoard();
 
-  string boardHeaderToString();
+  std::string boardHeaderToString();
 
-  string boardBodyToString();
+  std::string boardBodyToString();
 
   int getRows();
 
   int getCols();
 
-  vector<vector<Tile*> > getTilesOnBoard();
+  std::vector<std::vector<Tile*> > getTilesOnBoard();
 
 private:
   int rows = 0;
   int cols = 0;
   int maxRows = 26;
   int maxCols = 26;
-  vector<vector<Tile*> > tilesOnBoard;
+  std::vector<std::vector<Tile*> > tilesOnBoard;
 
 };
 

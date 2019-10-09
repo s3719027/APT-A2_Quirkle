@@ -15,29 +15,25 @@ void Menu::showMenu()
   std::cout<<"-------------"<<std::endl;
   std::cout<<"1. New Game"<<std::endl;;
   std::cout<<"2. Load Game"<<std::endl;
-  std::cout<<"3. Show Stydent Information"<std::endl;
-  std::cout<<"Quit"<<std::endl;
+  std::cout<<"3. Show Stydent Information"<<std::endl;
+  std::cout<<"4. Quit"<<std::endl;
 
   std::cout<<"<";
   char input=' ';
   std::cin>>input;
   if(input=='1')
   {
-    Bag* bag=new Bag();
-    tileBag=bag->getBag();
-    board=new Board(6,6);
     StartGame* sg=new StartGame();
+    sg->BasicSetting();
     sg->PlayerSignIn();
     sg->SetUpGame();
   }
   if(input=='2')
   {
     std::cout<<"----------"<<std::endl;
+    std::cout<<std::endl;
     StartGame* sg=new StartGame();
-    std::cout<<"Please, enter the name of your saved game"<<std::endl;
-    std::string savedName="";
-    getline(std::cin,savedName);
-    sg->loadGame(savedName);
+    sg->loadGame();
   }
   if(input=='3')
   {

@@ -22,6 +22,12 @@ bool StartGame::GameOver()
   return false;
 }
 
+void StartGame::BasicSetting()
+{
+  Bag* bag=new Bag();
+  tileBag=bag->getBag();
+  board=new Board(6,6);
+}
 
 void StartGame::SetUpGame()
 {
@@ -54,6 +60,10 @@ void StartGame::SetUpGame()
       currentPlayerName=player1->getName();
     }
  }
+ if(GameOver())
+ {
+   showResult();
+ }
 
 }
 
@@ -65,21 +75,18 @@ void StartGame::PlayerSignIn()
   std::cout<<"Enter a name for player1 (uppercase characters only)"<<std::endl;
   std::cin>>playerName1;
 
-  std::cout<<"Enter a name for player1 (uppercase characters only)"<<std::endl;
+  std::cout<<"Enter a name for player2 (uppercase characters only)"<<std::endl;
   std::cin>>playerName2;
-  player2=new Player(playerName2);
-  if(vaildInput(playerName1))
+  if(vaildInput(playerName1)==true&&vaildInput(playerName2)==true)
   {
     player1=new Player(playerName1);
-  }
-  if(vaildInput(playerName2))
-  {
     player2=new Player(playerName2);
     std::cout<<"Let's play!"<<std::endl;
   }
-  else{
+   else{
    PlayerSignIn();
  }
+  currentPlayerName=player1->getName();
 }
 
 //To make sure player enter uppercase name
@@ -107,8 +114,8 @@ if(playerInput!="")
     {
          if(player->getTilesOnHand()->has(tilename))
          {
-           calculatePlayerScores(board,row,col);
            board->store(tileToPlace,row,col);
+           calculatePlayerScores(board,row,col);
            player->removeTile(tilename);
            if (tileBag->size() > 0)
            {
@@ -120,6 +127,9 @@ if(playerInput!="")
          else{
            std::cout<<"No these tile on your hand"<<std::endl;
           }
+    }else if(qwrikleRule(tileToPlace,row,col,board)==false){
+      std::cout<<"You put invaild place"<<std::endl;
+      playerMovement(player,board);
     }
    }
    else if(getInput(playerInput,0,7)=="REPLACE")
@@ -135,14 +145,16 @@ if(playerInput!="")
    }
    else if(getInput(playerInput,0,4)=="EXIT")
    {
+     showResult();
      exit(0);
+
    }
   }
 }
 
 bool StartGame::isInBoard(Board* limitBoard,int row, int col)
 {
-  if(row<limitBoard->getRows()&&col<limitBoard->getCols())
+  if(row>=0&&col>=0&&row<limitBoard->getRows()&&col<limitBoard->getCols()&&row<26&&col<26)
   {
     return true;
   }
@@ -160,9 +172,7 @@ bool StartGame::isTilesOnHand(Player* player, std::string word)
 
 bool StartGame::qwrikleRule(Tile* tile, int row, int col, Board* board)
 {
-//  bool vaild=false;
-  bool colorIssue=true;
-  bool shapeIssue=true;
+
   bool canPlace=false;
   int leftSide=col-1;
   int rightSide=col+1;
@@ -205,7 +215,6 @@ if(isFirstTile==false)
       //colorIssue=true;
     }else{
      canPlace=false;
-     colorIssue=false;
     }
 
   }
@@ -219,7 +228,6 @@ if(isFirstTile==false)
       canPlace=true;
     //  colorIssue=true;
     }else{
-      colorIssue=false;
       canPlace=false;
     }
   }
@@ -232,7 +240,6 @@ if(isFirstTile==false)
        canPlace=true;
       // shapeIssue=true;
      }else{
-       shapeIssue=false;
        canPlace=false;
      }
   }
@@ -245,18 +252,8 @@ if(isFirstTile==false)
       canPlace=true;
       //shapeIssue=true;
     }else{
-      shapeIssue=false;
       canPlace=false;
     }
-  }
-  // two direction
-
-  if(colorIssue==false)
-  {
-   std::cout<<"You can't place here, you must to place the same color tile"<<std::endl;
- }else if(shapeIssue==false)
-  {
-   std::cout<<"You can't place here, you must to place the same shape tile"<<std::endl;
   }
 
   return canPlace;
@@ -328,35 +325,40 @@ bool StartGame::isSameShape(Tile* tile1, Tile* tile2)
 
 void StartGame::giveScore(Player* player)
 {
-  if(qwirkle)
+  if(qwirkle==true)
   {
     score+=6;
+    std::cout<<"Qwirkle!"<<std::endl;
+
   }
   player->addScore(score);
-  score=0;
   qwirkle=false;
+  score=0;
 }
 //Because the place where player want to place tile is empty, if we want to count the tiles,
 //we have to start from the last tile;
 void StartGame::calculatePlayerScores(Board* board, int row, int col)
 {
   std::vector<std::vector<Tile*>> v=board->getTilesOnBoard();
-  if(col>=0&&v[row][col-1]!=nullptr)
+  if(isFirstTile!=true)
   {
-    this->score+=countTilesInBoard(board,row,col,"Left");
-  }
-  if(col<board->getCols()&&v[row][col+1]!=nullptr)
-  {
-    this->score+=countTilesInBoard(board,row,col+1,"Right");
-  }
-  if(row>=0&&v[row-1][col]!=nullptr)
-  {
-    this->score+=countTilesInBoard(board,row-1,col,"Up");
-  }
-  if(row<board->getRows()&&v[row+1][col]!=nullptr)
-  {
-    this->score+=countTilesInBoard(board,row+1,col,"Low");
-  }
+   if(col>=0&&v[row][col-1]!=nullptr)
+   {
+     this->score+=countTilesInBoard(board,row,col,"Left");
+   }
+    if(col<board->getCols()&&v[row][col+1]!=nullptr)
+   {
+     this->score+=countTilesInBoard(board,row,col+1,"Right");
+   }
+   if(row>=0&&v[row-1][col]!=nullptr)
+   {
+     this->score+=countTilesInBoard(board,row-1,col,"Up");
+   }
+   if(row<board->getRows()&&v[row+1][col]!=nullptr)
+   {
+     this->score+=countTilesInBoard(board,row+1,col,"Low");
+   }
+ }
 }
 
 
@@ -403,7 +405,6 @@ int StartGame::countTilesInBoard(Board* board, int row, int col,std::string dire
   if(numberOfTiles==5)
   {
      this->qwirkle=true;
-     std::cout<<"Qwirkle!"<<std::endl;
   }
     return numberOfTiles;
 }
@@ -427,8 +428,8 @@ Node* current=player1->getTilesOnHand()->getHead();
 
   while(current!=nullptr)
   {
-    if(cuurent->next!=nullptr)
-      saveGame<<cuurent->getTile()->toString()<<",";
+    if(current->next!=nullptr)
+      saveGame<<current->getTile()->toString()<<",";
     else
       saveGame<<current->getTile()->toString()<<std::endl;
     current=current->next;
@@ -443,7 +444,7 @@ Node* current=player1->getTilesOnHand()->getHead();
   while(current!=nullptr)
   {
     if(current->next!=nullptr)
-      saveGame<<cuurent->getTile()->toString()<<",";
+      saveGame<<current->getTile()->toString()<<",";
     else
       saveGame<<current->getTile()->toString()<<std::endl;
     current=current->next;
@@ -467,145 +468,220 @@ Node* current=player1->getTilesOnHand()->getHead();
   exit(0);
 }
 
-void StartGame::loadGame(std::string saveName)
+void StartGame::showResult(){
+  board->printBoard();
+  std::cout<<std::endl;
+  std::cout<< "GAME OVER" <<std::endl;
+  std::cout<< "Score for " << player1->getName() << ": " << player1->getScore() <<std::endl;
+  std::cout<< "Score for " << player2->getName() << ": " << player2->getScore() <<std::endl;
+
+  if (player1->getScore() > player2->getScore())
+    std::cout<< "Player " << player1->getName() << " won " <<std::endl;
+  else if (player1->getScore() < player2->getScore())
+    std::cout<< "Player " << player2->getName() << " won " <<std::endl;
+  else
+    std::cout << " No winner " << std::endl;
+}
+
+void StartGame::loadGame()
 {
-  std::string filename = saveName + ".txt";
-  std::string tile;
- std::ifstream loadGame;
- loadGame.open(filename,std::ios::in);
- //creates player with name
+  std::string allTiles;
+  std::cout<<"Enter filename"<<std::endl;
+  std::string filename="";
+  std::getline(std::cin,filename);
+  filename=filename+".txt";
+    std::ifstream loadGame;
+    loadGame.open(filename,std::ios::in);
+   //creates player with name
 
- std::string line;
- std::getline(loadGame, line);
- Player* player1 = new Player(line);
+   std::string line;
 
- //updates players score
- //the end of getline is /n
- std::getline(loadGame, line);
- int player1Score=0;
- std::stringstream ss;
- ss<<line;
- ss>>player1Score;
- player1->setScore(player1Score);
- //adds tiles to players hand
- std::getline(loadGame, line);
+   //player1 name
+   std::getline(loadGame, line);
+   std::string player1name=line;
+   player1=new Player(player1name);
+   std::cout<<player1->getName()<<std::endl;
+   //player1 scores
+   std::getline(loadGame,line);
+   int player1Score=line[0]-'0';
+   player1->setScore(player1Score);
+   std::cout<<player1->getScore()<<std::endl;
 
+   //player1 tiles
+   std::getline(loadGame,line);
+   std::string player1Tiles=line;
 
- std::stringstream ss(line);
- while (std::getline(ss, tile, ','))
+   int acolor=0;//for color
+   int ashape=1;//for shape
+   //adds tiles to players hand
+  //run 6 times, can get r1, r2, r3, r4, r5, r6
+  for(int i=0; i<6; ++i)
+  {
+    char color=player1Tiles[acolor];
+    //Because the ',' is place at the 0, 3, 6, 9, 12, 15
+    int shape=player1Tiles[ashape]-'0';
+    Tile* tile=new Tile(color,shape);
+    //std::cout<<tile->toString()<<std::endl;
+    player1->addTiles(tile);
+    acolor+=3;
+    ashape+=3;
+  }
+   player1->showTilesOnHand();
 
- {
+   //player2 name
+   std::getline(loadGame,line);
+   std::string player2name=line;
+   player2=new Player(player2name);
+   std::cout<<player2->getName()<<std::endl;
 
-   Tile* tile = new Tile(tile.substr(0,1), tile.substr(1,1));
+   //player2 scores
+   std::getline(loadGame,line);
+   int player2Score=line[0]-'0';
+    player2->setScore(player2Score);
+    std::cout<<player2->getScore()<<std::endl;
 
-   player1->getTilesOnHand()->add(tile);
+   //player2 tiles
+   std::getline(loadGame,line);
+   std::string player2Tiles=line;
 
- }
+   //get player2 hand tiles
+   int bcolor=0;
+   int bshape=1;
+   for(int i=0; i<6; ++i)
+   {
+     char color=player2Tiles[bcolor];
+     //Because the ',' is place at the 0, 3, 6, 9, 12, 15
+     int shape=player2Tiles[bshape]-'0';
+     Tile* tile=new Tile(color,shape);
+     //std::cout<<tile->toString()<<std::endl;
+     player2->addTiles(tile);
+     bcolor+=3;
+     bshape+=3;
+   }
+    player2->showTilesOnHand();
 
- //creates player with name
- std::getline(loadGame, line);
- Player* player2 = new Player(line);
- //updates players score
-  int player2Score=0;
- std::getline(loadGame, line);
- ss<<line;
- ss>>player2Score;
- player2->setScore(player2Score);
- //adds tiles to players hand
+  std::getline(loadGame,line);
+  std::string boardL=line;
+  //it is first row,
+  //the rows= boardR.length()/3-1
 
- std::getline(loadGame, line);
+  // std::getline(loadGame,line,".");
+  // std::string boardl=line;
+  getline(loadGame, line);
+  boardL = line + "\n";
+  getline(loadGame, line);
+  boardL += line + "\n";
 
- std::stringstream ss(line);
+  // used to split board and tilebag
+  while(line[2] != ',') {
+    getline(loadGame, line);
+    if(line[2] != ','){
+      boardL += line + "\n";
+    }else{
+        allTiles=line;
+    }
+  }
+   //put the board from the second row "-----"into a string array
+   //
 
- while (std::getline(ss, tile, ','))
+   //TileBag
 
- {
+   int length12=0;
+   int aazz=boardL.length();
 
-   Tile* tile = new Tile(tile.substr(0,1), tile.substr(1,1));
+   for(int i=0; i<aazz;++i)
+    {
+      if(boardL[i+2]=='A')
+       {
+         length12=i;
+       }
+     }
+     //length/2 = the number of sapce in each row,then -header of board
+   int boardRows=aazz%(length12/2)-2;
+   int boardCols=length12/6-1;
+    // use mathematic way to get the column and rows of board
+   board = new Board(boardRows, boardCols);
 
-   player2->getTilesOnHand()->add(tile);
+    // use mathematic way to get tiles in board and the position of tiles
+    for (int i= 1; i < aazz; i++) {
+      if (boardL[i] == '|' && boardL[i-1] != ' ') {
+       char color = boardL[i - 2];
+       int shape = boardL[i-1]-'0';
+        int tileCol = ((i - 2) % (3 * boardCols + 5)) / 3 - 1;
+        int tileRow = ((i - 2) % (3 * boardCols + 5)) - 2;
 
- }
-
- //skip first two lines of board print
-
- std::getline(loadGame, line);
-
- std::getline(loadGame, line);
- int rowIndex = 0;
- std::vector<std::vector<Tile*>> board;
-
- do {
-
-    std::getline(loadGame, line);
-
-    for (int i = 2; i != line.length() - 1; i++) {
-
-      if (line.substr(i,1) == "|") {
-        
-        //if the next board position is empty, add nullptr to vector
-        if (line.substr(i,1) == "|") {
-
-          board.at(rowIndex).push_back(nullptr);
-
-        }
-      }
-
-      else if (std::regex_match(line.substr(i,1), pattern)) {
-
-        Tile* tile = new Tile(line.substr(i,1), line.substr(i + 1,1));
-        board.at(rowIndex).push_back(tile);
+        // place tiles
+        board->store(new Tile(color, shape), tileRow, tileCol);
       }
     }
-    rowIndex++;
-  }
-  while (line.substr(line.length() - 1,1) != "-");
-  
- //skip next line
 
- std::getline(loadGame, line);
+    int lengthTileBag=allTiles.length();
+    int ccolor=0;
+    int cshape=1;
+    for(int i=0; i<(lengthTileBag+1)/3;++i)
+    {
+      char color=allTiles[ccolor];
+      int shape=allTiles[cshape]-'0';
+      Tile* tile=new Tile(color,shape);
+      tileBag->add(tile);
+      ccolor+=3;
+      cshape+=3;
+    }
+     tileBag->show();
 
- std::getline(loadGame, line);
+   //currentPlayer's name;
+   std::getline(loadGame,line);
+   std::string cname=line;
+   currentPlayerName=cname;
 
- std::stringstream ss(line);
 
- std::string tile;
- //load tilebag
+  //for tilebag
 
- LinkedList* tilebag = new LinkedList();
+   //if rows=6, boardR.length()=21;
+   /*int aaa=boardR.length();
+   int bbb=boardl.length();
+   int rows=aaa/3-1;
+   //the rows of the board;
+   int cols=(bbb+aaa-rows)/21-2;
+   // i try to used mathematic way to solve this question
+   // if rows=6, board=153, cols=(153+21-6)/21-2=6;
+   board=new Board(rows,cols);
+   //dcol and dshape are for tiles on the board
+   int dcolor=boardR.length()+4;//from 0
+   int dshape=boardR.length()+5;
+   int rowLength=boardR.length()+1;
+   int startPlace=boardR.length()+4;
+   for(int i=0; i<board.length()/3; ++i)
+   {
+     if(board[dcol]-1!="|"&&board[dshape]+1!=" ")
+     {
+       char color=boardl[dcolor];
+       int shape=boardl[dshape]-'0';
+       Tile* tile=new Tile(color,shape);
+       realRow=dcolor/rowLength-1;
+       realCol=(dcolor-startPlace)/3;
+       board->store(tile,realRow,realCol);
+       dcolor+=3;
+       dshape+=3;
+     }
+   }*/
+   SetUpGame();
 
- while (std::getline(ss, tile, ','))
-
- {
-
-   Tile* tile = new Tile(tile.substr(0,1), tile.substr(1,1));
-
-   tilebag->add(tile);
-
- }
- //set current player
-
- std::getline(loadGame, line);
-
- currentPlayerName=line;
-
- SetUpGame();
 }
 
 
 bool StartGame::vaildInput(std::string input)
 {
-  if(input=="")
-  {
-    for(char c:input)
-    {
-      if((!isupper(c)||!isalpha(c))
-      {
-        return false;
-      }
-    }
-  }else{
-    return false;
-  }
-  return true;
+  bool valid = true;
+
+ if (input != ""){
+   for (char c: input)
+     if ((!isalpha(c) || !isupper(c)))
+       valid = false;
+ }
+ else
+   valid = false;
+
+ return valid;
+
 }
