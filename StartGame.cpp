@@ -467,7 +467,7 @@ Node* current=player1->getTilesOnHand()->getHead();
   exit(0);
 }
 
-void StartGame::loadGame(std::string fileName)
+void StartGame::loadGame(std::string saveName)
 {
   std::string filename = saveName + ".txt";
   std::string tile;
@@ -477,7 +477,7 @@ void StartGame::loadGame(std::string fileName)
 
  std::string line;
  std::getline(loadGame, line);
- player1=new Player(line);
+ Player* player1 = new Player(line);
 
  //updates players score
  //the end of getline is /n
@@ -504,9 +504,9 @@ void StartGame::loadGame(std::string fileName)
 
  //creates player with name
  std::getline(loadGame, line);
- player2 =new Player(line);
+ Player* player2 = new Player(line);
  //updates players score
-int player2Score=0;
+  int player2Score=0;
  std::getline(loadGame, line);
  ss<<line;
  ss>>player2Score;
@@ -533,44 +533,34 @@ int player2Score=0;
 
  std::getline(loadGame, line);
  int rowIndex = 0;
-
  std::vector<std::vector<Tile*>> board;
 
  do {
 
-   std::getline(loadGame, line);
+    std::getline(loadGame, line);
 
-   for (int i = 2; i != line.length(); i++) {
+    for (int i = 2; i != line.length() - 1; i++) {
 
+      if (line.substr(i,1) == "|") {
+        
+        //if the next board position is empty, add nullptr to vector
+        if (line.substr(i,1) == "|") {
 
+          board.at(rowIndex).push_back(nullptr);
 
-     if (line.substr(i,1) == "|") {
+        }
+      }
 
-       //if the next board position is empty, add nullptr to vector
+      else if (std::regex_match(line.substr(i,1), pattern)) {
 
-       if (line.substr(i + 1,1) == "|") {
-
-         board->at(rowIndex)->push_back(nullptr);
-
-       }
-
-     }
-
-     else if (std::regex_match(line.substr(i,1), "[A-F]")) {
-
-       Tile* tile = new Tile(line.substr(i,1), line.substr(i + 1,1));
-
-       board->at(rowIndex)->push_back(tile);
-
-     }
-
-   }
-
-   rowIndex++;
-
- }
-
- while (line.substr(0,1) != "-");
+        Tile* tile = new Tile(line.substr(i,1), line.substr(i + 1,1));
+        board.at(rowIndex).push_back(tile);
+      }
+    }
+    rowIndex++;
+  }
+  while (line.substr(line.length() - 1,1) != "-");
+  
  //skip next line
 
  std::getline(loadGame, line);

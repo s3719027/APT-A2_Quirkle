@@ -7,6 +7,8 @@
 #include <sstream>
 #include <iostream>
 #include <fstream>
+#include <regex>
+
 class StartGame{
   public:
       StartGame();
